@@ -13,17 +13,25 @@ module.exports = (sequelize, DataTypes) => {
       };
     }
   }
-  User.init(
-    {
-      name: DataTypes.STRING,
-      email: DataTypes.STRING,
-      password: DataTypes.STRING,
-      role: DataTypes.STRING,
-    },
-    {
-      sequelize,
-      modelName: "User",
-    }
-  );
+ User.init(
+  {
+    name: DataTypes.STRING,
+    email: DataTypes.STRING,
+    tanggal_lahir: DataTypes.STRING,
+    alamat: DataTypes.STRING,
+    nomor_telepon: DataTypes.STRING,
+    password: DataTypes.STRING,
+    role: DataTypes.STRING,
+    jabatan: DataTypes.STRING,
+    kode: DataTypes.STRING,
+  },
+  {
+    sequelize,
+    modelName: "User",
+    tableName: "users", // ini juga penting, supaya modelnya tahu nama tabel yang benar
+    underscored: true,  // supaya field created_at, updated_at otomatis cocok
+  }
+);
+
   return User;
 };
