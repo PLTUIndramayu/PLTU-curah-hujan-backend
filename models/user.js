@@ -9,13 +9,13 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       User.associate = function (models) {
-        User.hasMany(models.CurahHujan, { foreignKey: "userId" });
+        User.hasMany(models.CurahHujan, { foreignKey: "user_id" });
       };
     }
   }
  User.init(
   {
-    name: DataTypes.STRING,
+    nama: DataTypes.STRING,
     email: DataTypes.STRING,
     tanggal_lahir: DataTypes.STRING,
     alamat: DataTypes.STRING,
@@ -28,8 +28,8 @@ module.exports = (sequelize, DataTypes) => {
   {
     sequelize,
     modelName: "User",
-    tableName: "users", // ini juga penting, supaya modelnya tahu nama tabel yang benar
-    underscored: true,  // supaya field created_at, updated_at otomatis cocok
+    tableName: "users", 
+    underscored: true,  
   }
 );
 

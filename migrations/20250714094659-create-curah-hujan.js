@@ -1,39 +1,3 @@
-"use strict";
-const bcrypt = require("bcryptjs");
-
-module.exports = {
-  async up(queryInterface, Sequelize) {
-    await queryInterface.bulkInsert("users", [
-      {
-        nama: "Admin",
-        email: "admin@example.com",
-        password: await bcrypt.hash("admin123", 10),
-        role: "admin",
-        created_at: new Date(),
-        updated_at: new Date(),
-      },
-      {
-        nama: "Super Admin",
-        email: "superadmin@example.com",
-        password: await bcrypt.hash("admin123", 10),
-        role: "superadmin",
-        created_at: new Date(),
-        updated_at: new Date(),
-      },
-    ]);
-  },
-
-  async down(queryInterface, Sequelize) {
-    await queryInterface.bulkDelete("users", {
-      email: {
-        [Sequelize.Op.in]: ["admin@example.com", "superadmin@example.com"],
-      },
-    });
-  },
-};
-
-
-
 'use strict';
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -51,10 +15,16 @@ module.exports = {
       jam: {
         type: Sequelize.TIME
       },
-      umur_HSS: {
+      umur_hss: {
         type: Sequelize.INTEGER
       },
-      tanaman: {
+      umur_tanaman: {
+        type: Sequelize.STRING
+      },
+      curah_hujan: {
+        type: Sequelize.FLOAT
+      },
+      sifat_hujan: {
         type: Sequelize.STRING
       },
       user_id: {
@@ -66,14 +36,14 @@ module.exports = {
       sumber_air: {
         type: Sequelize.STRING
       },
-      OPT: {
+      opt: {
         type: Sequelize.STRING
       },
-      createdAt: {
+      created_at: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
         type: Sequelize.DATE
       }
