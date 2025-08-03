@@ -1,4 +1,5 @@
 const { CurahHujan, User } = require('../models');
+const { Op } = require('sequelize');
 
 function hitungSifatHujan(mm) {
   if (mm < 5) return "Rendah";
@@ -7,7 +8,7 @@ function hitungSifatHujan(mm) {
 }
 
 // POST 
-const sifat_hujan = hitungSifatHujan(sumber_air);
+const sifat_hujan = hitungSifatHujan();
 
 exports.createCurahHujan = async (req, res) => {
   try {
@@ -39,13 +40,20 @@ exports.getByUser = async (req, res) => {
     const user_id = req.user.id;
     const bulan = req.query.bulan; // format: '2025-07'
 
+    if (!bulan) {
+      return res.status(400).json({ message: "Parameter 'bulan' diperlukan (format: YYYY-MM)" });
+    }
+
+    const startDate = new Date(`${bulan}-01T00:00:00Z`);
+    const endDate = new Date(new Date(startDate).setMonth(startDate.getMonth() + 1));
+
     const data = await CurahHujan.findAll({
       where: {
         user_id,
         tanggal: {
-          [Op.like]: `${bulan}%`,
-        }
-      }
+          [Op.between]: [startDate, endDate],
+        },
+      },
     });
 
     res.json({ data });

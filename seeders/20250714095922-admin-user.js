@@ -3,20 +3,34 @@ const bcrypt = require("bcryptjs");
 
 module.exports = {
   async up(queryInterface, Sequelize) {
+    const hashedPassword = await bcrypt.hash("admin123", 10);
+
+    console.log("Seeder dijalankan!");
+
     await queryInterface.bulkInsert("users", [
       {
         nama: "Admin",
         email: "admin@example.com",
-        password: await bcrypt.hash("admin123", 10),
+        password: hashedPassword,
         role: "admin",
+        tanggal_lahir: "1990-01-01",
+        alamat: "Jalan Admin",
+        nomor_telepon: "08123456789",
+        jabatan: "Kepala",
+        kode: "ADM001",
         created_at: new Date(),
         updated_at: new Date(),
       },
       {
         nama: "Super Admin",
         email: "superadmin@example.com",
-        password: await bcrypt.hash("admin123", 10),
+        password: hashedPassword,
         role: "superadmin",
+        tanggal_lahir: "1985-05-05",
+        alamat: "Jalan Super",
+        nomor_telepon: "08123456788",
+        jabatan: "Manager",
+        kode: "ADM002",
         created_at: new Date(),
         updated_at: new Date(),
       },
@@ -33,53 +47,3 @@ module.exports = {
 };
 
 
-
-'use strict';
-/** @type {import('sequelize-cli').Migration} */
-module.exports = {
-  async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('curah_hujan', {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      tanggal: {
-        type: Sequelize.DATE
-      },
-      jam: {
-        type: Sequelize.TIME
-      },
-      umur_HSS: {
-        type: Sequelize.INTEGER
-      },
-      tanaman: {
-        type: Sequelize.STRING
-      },
-      user_id: {
-        type: Sequelize.INTEGER
-      },
-      varietas: {
-        type: Sequelize.STRING
-      },
-      sumber_air: {
-        type: Sequelize.STRING
-      },
-      OPT: {
-        type: Sequelize.STRING
-      },
-      createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE
-      },
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE
-      }
-    });
-  },
-  async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('curah_hujan');
-  }
-};
