@@ -33,7 +33,6 @@ exports.createCurahHujan = async (req, res) => {
   }
 };
 
-// 
 exports.getByUser = async (req, res) => {
   try {
     const user_id = req.user.id;
@@ -60,8 +59,7 @@ exports.getByUser = async (req, res) => {
     res.status(500).json({ message: "Gagal mengambil data", error: err.message });
   }
 };
-
-// 
+ 
 exports.getAllData = async (req, res) => {
   try {
     const data = await CurahHujan.findAll({ include: User });
