@@ -7,7 +7,6 @@ function hitungSifatHujan(mm) {
   return "Lebat";
 }
 
-// POST 
 const sifat_hujan = hitungSifatHujan();
 
 exports.createCurahHujan = async (req, res) => {

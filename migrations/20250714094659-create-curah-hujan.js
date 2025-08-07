@@ -3,11 +3,11 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('curah_hujan', {
-      id: {
+       id: {
+        type: Sequelize.UUID,
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        defaultValue: Sequelize.literal("uuid_generate_v4()"),
       },
       tanggal: {
         type: Sequelize.DATE
@@ -28,7 +28,14 @@ module.exports = {
         type: Sequelize.STRING
       },
       user_id: {
-        type: Sequelize.INTEGER
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model: 'users',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
       },
       varietas: {
         type: Sequelize.STRING
@@ -39,16 +46,22 @@ module.exports = {
       opt: {
         type: Sequelize.STRING
       },
+      keterangan: {
+        type: Sequelize.STRING
+      },
       created_at: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
       },
       updated_at: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
       }
     });
   },
+
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('curah_hujan');
   }

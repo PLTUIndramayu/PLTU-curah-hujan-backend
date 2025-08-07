@@ -1,14 +1,16 @@
 "use strict";
 const bcrypt = require("bcryptjs");
+const { v4: uuidv4 } = require("uuid");
 
 module.exports = {
-  async up(queryInterface, Sequelize) {
+  async up(queryInterface) {
     const hashedPassword = await bcrypt.hash("admin123", 10);
 
     console.log("Seeder dijalankan!");
 
     await queryInterface.bulkInsert("users", [
       {
+        id: uuidv4(),
         nama: "Admin",
         email: "admin@example.com",
         password: hashedPassword,
@@ -17,11 +19,14 @@ module.exports = {
         alamat: "Jalan Admin",
         nomor_telepon: "08123456789",
         jabatan: "Kepala",
-        kode: "ADM001",
+        kode_user: "USR-001",
+        kode_stasiun: "STN-001",
+        tgl_mulai_bekerja: new Date(),
         created_at: new Date(),
         updated_at: new Date(),
       },
       {
+        id: uuidv4(),
         nama: "Super Admin",
         email: "superadmin@example.com",
         password: hashedPassword,
@@ -30,7 +35,9 @@ module.exports = {
         alamat: "Jalan Super",
         nomor_telepon: "08123456788",
         jabatan: "Manager",
-        kode: "ADM002",
+        kode_user: "USR-002",
+        kode_stasiun: "STN-002",
+        tgl_mulai_bekerja: new Date(),
         created_at: new Date(),
         updated_at: new Date(),
       },
@@ -45,5 +52,3 @@ module.exports = {
     });
   },
 };
-
-

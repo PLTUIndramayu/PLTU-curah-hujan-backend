@@ -1,53 +1,62 @@
-'use strict';
+"use strict";
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('users', {
+    await queryInterface.createTable("users", {
       id: {
+        type: Sequelize.UUID,
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        defaultValue: Sequelize.literal("uuid_generate_v4()"),
       },
       nama: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       email: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        unique: true,
       },
       password: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       role: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       tanggal_lahir: {
-        type: Sequelize.STRING
+        type: Sequelize.DATE,
       },
       alamat: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       nomor_telepon: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       jabatan: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
-      kode: {
-        type: Sequelize.STRING
+      kode_user: {
+        type: Sequelize.STRING,
+      },
+      kode_stasiun: {
+        type: Sequelize.STRING,
+      },
+      tgl_mulai_bekerja: {
+        type: Sequelize.DATE,
       },
       created_at: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
       updated_at: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+      },
     });
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('users');
-  }
+    await queryInterface.dropTable("users");
+  },
 };
