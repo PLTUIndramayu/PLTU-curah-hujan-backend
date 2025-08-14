@@ -1,11 +1,12 @@
+require("dotenv").config();
 const express = require("express");
+const cors = require("cors");
+const { sequelize } = require("./models");
+
 const app = express();
 const PORT = process.env.PORT || 3001;
-const { User } = require("./models");
 
 app.use(express.json());
-
-const cors = require("cors");
 
 const allowedOrigins = [
   "http://localhost:3000",
@@ -20,9 +21,21 @@ app.use(
   })
 );
 
-app.listen(PORT, () => {
-  console.log(`Server running on ${PORT}`);
+app.get("/", (req, res) => {
+  res.send("Backend berjalan 🚀");
 });
+
+sequelize
+  .sync({ alter: true })
+  .then(() => {
+    console.log("✅ Database connected & synchronized");
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("❌ Database connection error:", err);
+  });
 
 const authRoutes = require("./routes/authRoutes");
 app.use("/auth", authRoutes);
