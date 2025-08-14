@@ -4,6 +4,7 @@
     "password": "",
     "database": "curahhujan_db",
     "host": "127.0.0.1",
+    "port": "${DB_PORT}",
     "dialect": "postgres"
   },
   "test": {
@@ -11,6 +12,7 @@
     "password": "",
     "database": "curahhujan_db",
     "host": "127.0.0.1",
+    "port": "${DB_PORT}",
     "dialect": "postgres"
   },
   "production": {
