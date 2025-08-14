@@ -1,37 +1,48 @@
 "use strict";
 const { Model } = require("sequelize");
+
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      User.associate = function (models) {
-        User.hasMany(models.CurahHujan, { foreignKey: "userId" });
-      };
+      User.hasMany(models.CurahHujan, {
+        foreignKey: "user_id",
+        onDelete: "CASCADE",
+      });
     }
   }
- User.init(
-  {
-    name: DataTypes.STRING,
-    email: DataTypes.STRING,
-    tanggal_lahir: DataTypes.STRING,
-    alamat: DataTypes.STRING,
-    nomor_telepon: DataTypes.STRING,
-    password: DataTypes.STRING,
-    role: DataTypes.STRING,
-    jabatan: DataTypes.STRING,
-    kode: DataTypes.STRING,
-  },
-  {
-    sequelize,
-    modelName: "User",
-    tableName: "users", // ini juga penting, supaya modelnya tahu nama tabel yang benar
-    underscored: true,  // supaya field created_at, updated_at otomatis cocok
-  }
-);
+
+  User.init(
+    {
+      id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
+      },
+      nama: DataTypes.STRING,
+      email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+        validate: { isEmail: true },
+      },
+      tanggal_lahir: DataTypes.DATE,
+      alamat: DataTypes.STRING,
+      nomor_telepon: DataTypes.STRING,
+      foto_profil: DataTypes.STRING,
+      password: DataTypes.STRING,
+      role: DataTypes.STRING,
+      jabatan: DataTypes.STRING,
+      kode_user: DataTypes.STRING,
+      kode_stasiun: DataTypes.STRING,
+      tgl_mulai_bekerja: DataTypes.DATE,
+    },
+    {
+      sequelize,
+      modelName: "User",
+      tableName: "users",
+      underscored: true,
+    }
+  );
 
   return User;
 };

@@ -4,12 +4,40 @@ const jwt = require("jsonwebtoken");
 
 require("dotenv").config();
 
+const { v4: uuidv4 } = require("uuid");
+
+exports.register = async (req, res) => {
+  try {
+    const { nama, email, password, role } = req.body;
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await User.create({
+      id: uuidv4(),
+      nama,
+      email,
+      password: hashedPassword,
+      role,
+      kode_user: `USR-${Math.random()
+        .toString(36)
+        .substring(2, 10)
+        .toUpperCase()}`,
+    });
+
+    res.status(201).json({ message: "User berhasil dibuat", user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Gagal membuat user" });
+  }
+};
+
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
     const user = await User.findOne({ where: { email } });
-    if (!user) return res.status(401).json({ message: "Email tidak ditemukan" });
+    if (!user)
+      return res.status(401).json({ message: "Email tidak ditemukan" });
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ message: "Password salah" });
@@ -24,5 +52,51 @@ exports.login = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Terjadi kesalahan server" });
+  }
+};
+
+exports.update = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const {
+      nama,
+      email,
+      tanggal_lahir,
+      alamat,
+      nomor_telepon,
+      jabatan,
+      kode_user,
+      kode_stasiun,
+      tgl_mulai_bekerja,
+    } = req.body;
+
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User tidak ditemukan" });
+    }
+
+    await user.update({
+      nama,
+      email,
+      tanggal_lahir,
+      alamat,
+      nomor_telepon,
+      jabatan,
+      kode_user,
+      kode_stasiun,
+      tgl_mulai_bekerja,
+    });
+
+    return res.status(200).json({
+      message: "Profil berhasil diperbarui",
+      data: user,
+    });
+  } catch (error) {
+    console.error("Gagal update profile:", error);
+    return res.status(500).json({
+      message: "Terjadi kesalahan saat memperbarui profil",
+      error: error.message,
+    });
   }
 };

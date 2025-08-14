@@ -1,85 +1,56 @@
-// "use strict";
-// const bcrypt = require("bcryptjs");
+"use strict";
+const bcrypt = require("bcryptjs");
+const { v4: uuidv4 } = require("uuid");
 
-// module.exports = {
-//   async up(queryInterface, Sequelize) {
-//     await queryInterface.bulkInsert("users", [
-//       {
-//         name: "Admin",
-//         email: "admin@example.com",
-//         password: await bcrypt.hash("admin123", 10),
-//         role: "admin",
-//         created_at: new Date(),
-//         updated_at: new Date(),
-//       },
-//       {
-//         name: "Super Admin",
-//         email: "superadmin@example.com",
-//         password: await bcrypt.hash("admin123", 10),
-//         role: "superadmin",
-//         created_at: new Date(),
-//         updated_at: new Date(),
-//       },
-//     ]);
-//   },
+module.exports = {
+  async up(queryInterface) {
+    const hashedPassword = await bcrypt.hash("admin123", 10);
 
-//   async down(queryInterface, Sequelize) {
-//     await queryInterface.bulkDelete("users", {
-//       email: {
-//         [Sequelize.Op.in]: ["admin@example.com", "superadmin@example.com"],
-//       },
-//     });
-//   },
-// };
+    console.log("Seeder dijalankan!");
 
+    await queryInterface.bulkInsert("users", [
+      {
+        id: uuidv4(),
+        foto_profil: "",
+        nama: "Admin",
+        email: "admin@example.com",
+        password: hashedPassword,
+        role: "admin",
+        tanggal_lahir: "1990-01-01",
+        alamat: "Jalan Admin",
+        nomor_telepon: "08123456789",
+        jabatan: "Kepala",
+        kode_user: "USR-001",
+        kode_stasiun: "STN-001",
+        tgl_mulai_bekerja: new Date(),
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+      {
+        id: uuidv4(),
+        foto_profil: "",
+        nama: "Super Admin",
+        email: "superadmin@example.com",
+        password: hashedPassword,
+        role: "superadmin",
+        tanggal_lahir: "1985-05-05",
+        alamat: "Jalan Super",
+        nomor_telepon: "08123456788",
+        jabatan: "Manager",
+        kode_user: "USR-002",
+        kode_stasiun: "STN-002",
+        tgl_mulai_bekerja: new Date(),
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+    ]);
+  },
 
-
-// 'use strict';
-// /** @type {import('sequelize-cli').Migration} */
-// module.exports = {
-//   async up(queryInterface, Sequelize) {
-//     await queryInterface.createTable('curah_hujan', {
-//       id: {
-//         allowNull: false,
-//         autoIncrement: true,
-//         primaryKey: true,
-//         type: Sequelize.INTEGER
-//       },
-//       tanggal: {
-//         type: Sequelize.DATE
-//       },
-//       jam: {
-//         type: Sequelize.TIME
-//       },
-//       umur_HSS: {
-//         type: Sequelize.INTEGER
-//       },
-//       tanaman: {
-//         type: Sequelize.STRING
-//       },
-//       user_id: {
-//         type: Sequelize.INTEGER
-//       },
-//       varietas: {
-//         type: Sequelize.STRING
-//       },
-//       sumber_air: {
-//         type: Sequelize.STRING
-//       },
-//       OPT: {
-//         type: Sequelize.STRING
-//       },
-//       createdAt: {
-//         allowNull: false,
-//         type: Sequelize.DATE
-//       },
-//       updatedAt: {
-//         allowNull: false,
-//         type: Sequelize.DATE
-//       }
-//     });
-//   },
-//   async down(queryInterface, Sequelize) {
-//     await queryInterface.dropTable('curah_hujan');
-//   }
-// };
+  async down(queryInterface, Sequelize) {
+    await queryInterface.bulkDelete("users", {
+      email: {
+        [Sequelize.Op.in]: ["admin@example.com", "superadmin@example.com"],
+      },
+    });
+  },
+};
