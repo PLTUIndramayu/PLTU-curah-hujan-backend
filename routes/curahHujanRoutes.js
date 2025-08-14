@@ -4,7 +4,7 @@ const curahHujanController = require("../controllers/curahHujanController");
 const authMiddleware = require("../middlewares/authMiddleware");
 
 router.get("/", authMiddleware, curahHujanController.getAllData);
-router.get("/:id", authMiddleware, curahHujanController.getByUser);
+router.get("/by-month", authMiddleware, curahHujanController.getDataByMonth);
 router.post("/", authMiddleware, curahHujanController.createCurahHujan);
 
 module.exports = router;

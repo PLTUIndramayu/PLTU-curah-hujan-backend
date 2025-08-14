@@ -1,5 +1,5 @@
-const { CurahHujan, User } = require('../models');
-const { Op } = require('sequelize');
+const { CurahHujan, User } = require("../models");
+const { Op } = require("sequelize");
 
 function hitungSifatHujan(mm) {
   if (mm < 5) return "Rendah";
@@ -11,61 +11,85 @@ const sifat_hujan = hitungSifatHujan();
 
 exports.createCurahHujan = async (req, res) => {
   try {
-    const { tanggal, jam, umur_hss, umur_tanaman, curah_hujan, varietas, sumber_air, opt } = req.body;
+    const {
+      tanggal,
+      jam,
+      umur_hss,
+      umur_tanaman,
+      curah_hujan,
+      varietas,
+      sumber_air,
+      opt,
+    } = req.body;
     const user_id = req.user.id;
 
     const dataBaru = await CurahHujan.create({
       tanggal,
       jam,
       umur_hss,
-      umur_tanaman, 
-      curah_hujan, 
+      umur_tanaman,
+      curah_hujan,
       sifat_hujan,
       varietas,
       sumber_air,
       opt,
-      user_id
+      user_id,
     });
 
-    res.status(201).json({ message: "Data curah hujan berhasil disimpan", data: dataBaru });
+    res
+      .status(201)
+      .json({ message: "Data curah hujan berhasil disimpan", data: dataBaru });
   } catch (err) {
-    res.status(500).json({ message: "Gagal menyimpan data", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Gagal menyimpan data", error: err.message });
   }
 };
 
-exports.getByUser = async (req, res) => {
+exports.getDataByMonth = async (req, res) => {
   try {
-    const user_id = req.user.id;
-    const bulan = req.query.bulan; // format: '2025-07'
+    const { bulan, tahun } = req.query;
+    // const user_id = req.user.id;
 
-    if (!bulan) {
-      return res.status(400).json({ message: "Parameter 'bulan' diperlukan (format: YYYY-MM)" });
+    if (!bulan || !tahun) {
+      return res.status(400).json({
+        message:
+          "Parameter 'bulan' dan 'tahun' diperlukan (format: bulan=MM&tahun=YYYY)",
+      });
     }
 
-    const startDate = new Date(`${bulan}-01T00:00:00Z`);
-    const endDate = new Date(new Date(startDate).setMonth(startDate.getMonth() + 1));
+    const month = parseInt(bulan, 10);
+    const year = parseInt(tahun, 10);
+
+    const startDate = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0));
+    const endDate = new Date(Date.UTC(year, month, 1, 0, 0, 0));
 
     const data = await CurahHujan.findAll({
       where: {
-        user_id,
+        // user_id,
         tanggal: {
-          [Op.between]: [startDate, endDate],
+          [Op.gte]: startDate,
+          [Op.lt]: endDate,
         },
       },
+      order: [["tanggal", "ASC"]],
     });
 
     res.json({ data });
   } catch (err) {
-    res.status(500).json({ message: "Gagal mengambil data", error: err.message });
+    console.error(err);
+    res.status(500).json({ message: err.message });
   }
 };
- 
+
 exports.getAllData = async (req, res) => {
   try {
     const data = await CurahHujan.findAll({ include: User });
 
     res.json({ data });
   } catch (err) {
-    res.status(500).json({ message: "Gagal mengambil semua data", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Gagal mengambil semua data", error: err.message });
   }
 };
