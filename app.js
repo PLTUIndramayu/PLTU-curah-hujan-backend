@@ -7,10 +7,18 @@ app.use(express.json());
 
 const cors = require('cors');
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://pltu-curah-hujan-frontend.vercel.app"
+];
+
 app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true, 
+  origin: allowedOrigins,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
 }));
+
+
 
 
 app.listen(PORT, () => {
