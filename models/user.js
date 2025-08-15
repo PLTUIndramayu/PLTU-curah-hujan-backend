@@ -7,6 +7,7 @@ module.exports = (sequelize, DataTypes) => {
       User.hasMany(models.CurahHujan, {
         foreignKey: "user_id",
         onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       });
     }
   }

@@ -1,27 +1,43 @@
 "use strict";
 const { Model } = require("sequelize");
-const { v4: uuidv4 } = require("uuid");
 
 module.exports = (sequelize, DataTypes) => {
   class CurahHujan extends Model {
     static associate(models) {
-      CurahHujan.belongsTo(models.User, { foreignKey: "user_id" });
+      CurahHujan.belongsTo(models.User, {
+        foreignKey: "user_id",
+        onDelete: "CASCADE",
+      });
     }
   }
+
   CurahHujan.init(
     {
       id: {
         type: DataTypes.UUID,
-         defaultValue: DataTypes.UUIDV4,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
       },
-      tanggal: DataTypes.DATE,
-      jam: DataTypes.TIME,
+      user_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+          model: "users",
+          key: "id",
+        },
+      },
+      tanggal: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      jam: {
+        type: DataTypes.TIME,
+        allowNull: true,
+      },
       umur_hss: DataTypes.INTEGER,
       umur_tanaman: DataTypes.STRING,
       curah_hujan: DataTypes.FLOAT,
       sifat_hujan: DataTypes.STRING,
-      user_id: DataTypes.INTEGER,
       varietas: DataTypes.STRING,
       sumber_air: DataTypes.STRING,
       opt: DataTypes.STRING,
@@ -34,5 +50,6 @@ module.exports = (sequelize, DataTypes) => {
       underscored: true,
     }
   );
+
   return CurahHujan;
 };
