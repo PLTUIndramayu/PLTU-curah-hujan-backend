@@ -11,6 +11,7 @@ app.use(express.json());
 const allowedOrigins = [
   "http://localhost:3000",
   "https://pltu-curah-hujan-frontend.vercel.app",
+  "https://pltu-curah-hujan-frontend-git-staging-pltu-indramayus-projects.vercel.app",
   "https://pltu-curah-hujan-backend-staging.up.railway.app",
   "https://api-curah-hujan.pltu.web.app"
 ];
