@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const { sequelize } = require("./models");
+const path = require("path");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -13,7 +14,7 @@ const allowedOrigins = [
   "https://pltu-curah-hujan-frontend.vercel.app",
   "https://pltu-curah-hujan-frontend-git-staging-pltu-indramayus-projects.vercel.app",
   "https://pltu-curah-hujan-backend-staging.up.railway.app",
-  "https://api-curah-hujan.pltu.web.app"
+  "pltu-curah-hujan-backend-production.up.railway.app",
 ];
 
 app.use(
@@ -52,12 +53,4 @@ app.use("/protected", protectedRoutes);
 const curahHujanRoutes = require("./routes/curahHujanRoutes");
 app.use("/curah-hujan", curahHujanRoutes);
 
-app.get("/users", async (req, res) => {
-  try {
-    const users = await User.findAll();
-    res.json(users);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Terjadi kesalahan server" });
-  }
-});
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
