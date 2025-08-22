@@ -63,7 +63,7 @@ exports.login = async (req, res) => {
     if (!isMatch) return res.status(401).json({ message: "Password salah" });
 
     const token = jwt.sign(
-      { id: user.id, role: user.role },
+      { id: user.id, email: user.email, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );

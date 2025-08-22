@@ -46,6 +46,54 @@ exports.createCurahHujan = async (req, res) => {
   }
 };
 
+exports.updateCurahHujan = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const {
+      tanggal,
+      jam,
+      umur_hss,
+      umur_tanaman,
+      curah_hujan,
+      sifat_hujan,
+      varietas,
+      sumber_air,
+      opt,
+      keterangan,
+    } = req.body;
+
+    const data = await CurahHujan.findByPk(id);
+
+    if (!data) {
+      return res.status(404).json({ message: "Data tidak ditemukan" });
+    }
+
+    await data.update({
+      tanggal,
+      jam,
+      umur_hss,
+      umur_tanaman,
+      curah_hujan,
+      sifat_hujan,
+      varietas,
+      sumber_air,
+      opt,
+      keterangan,
+    });
+
+    return res.status(200).json({
+      message: "Data berhasil diperbarui",
+      data: data,
+    });
+  } catch (error) {
+    console.error("Gagal update data:", error);
+    return res.status(500).json({
+      message: "Terjadi kesalahan saat memperbarui data",
+      error: error.message,
+    });
+  }
+};
+
 exports.getDataByMonth = async (req, res) => {
   try {
     const { bulan, tahun } = req.query;
@@ -91,5 +139,40 @@ exports.getAllData = async (req, res) => {
     res
       .status(500)
       .json({ message: "Gagal mengambil semua data", error: err.message });
+  }
+};
+
+exports.getDataById = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const data = await CurahHujan.findByPk(id, { include: User });
+
+    if (!data) {
+      return res.status(404).json({ message: "Data tidak ditemukan" });
+    }
+
+    res.json({ data });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Gagal mengambil data", error: err.message });
+  }
+};
+
+exports.deleteData = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const data = await CurahHujan.findByPk(id);
+
+    if (!data) {
+      return res.status(404).json({ message: "Data tidak ditemukan" });
+    }
+
+    await data.destroy();
+    res.json({ message: "Data berhasil dihapus" });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Gagal menghapus data", error: err.message });
   }
 };
