@@ -2,12 +2,10 @@ const { CurahHujan, User } = require("../models");
 const { Op } = require("sequelize");
 
 function hitungSifatHujan(mm) {
-  if (mm < 5) return "Rendah";
-  if (mm < 20) return "Sedang";
+  if (mm <= 5) return "Ringan";
+  if (mm <= 20) return "Sedang";
   return "Lebat";
 }
-
-const sifat_hujan = hitungSifatHujan();
 
 exports.createCurahHujan = async (req, res) => {
   try {
@@ -22,6 +20,7 @@ exports.createCurahHujan = async (req, res) => {
       opt,
     } = req.body;
     const user_id = req.user.id;
+    const sifat_hujan = hitungSifatHujan(curah_hujan);
 
     const dataBaru = await CurahHujan.create({
       tanggal,
@@ -55,13 +54,12 @@ exports.updateCurahHujan = async (req, res) => {
       umur_hss,
       umur_tanaman,
       curah_hujan,
-      sifat_hujan,
       varietas,
       sumber_air,
       opt,
       keterangan,
     } = req.body;
-
+    const sifat_hujan = hitungSifatHujan(curah_hujan);
     const data = await CurahHujan.findByPk(id);
 
     if (!data) {

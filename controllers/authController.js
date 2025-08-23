@@ -2,6 +2,8 @@ const { User, CurahHujan } = require("../models");
 
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
 
 require("dotenv").config();
 
@@ -177,3 +179,71 @@ exports.getAllUsers = async (req, res) => {
     });
   }
 };
+
+exports.deleteUser = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const user = await User.findByPk(id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User tidak ditemukan" });
+    }
+
+    await user.destroy();
+    res.json({ message: "User berhasil dihapus" });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Gagal menghapus user", error: err.message });
+  }
+};
+
+// exports.forgotPassword = async (req, res) => {
+//   try {
+//     const { email } = req.body;
+
+//     const user = await User.findOne({ where: { email } });
+//     if (!user) {
+//       return res.status(404).json({ message: "Email tidak ditemukan" });
+//     }
+
+//     const resetToken = crypto.randomBytes(32).toString("hex");
+//     const resetTokenExpiry = Date.now() + 1000 * 60 * 60;
+
+//     user.resetToken = resetToken;
+//     user.resetTokenExpiry = resetTokenExpiry;
+//     await user.save();
+
+//     const transporter = nodemailer.createTransport({
+//       service: "gmail",
+//       auth: {
+//         user: process.env.EMAIL_USER,
+//         pass: process.env.EMAIL_PASS,
+//       },
+//     });
+
+//     const resetUrl = `${process.env.FRONTEND_URL}/auth/reset-password/${resetToken}`;
+
+//     await transporter.sendMail({
+//       from: process.env.EMAIL_USER,
+//       to: email,
+//       subject: "Reset Password - Sistem Monitoring Curah Hujan",
+//       html: `
+//         <p>Anda meminta reset password.</p>
+//         <p>Klik link berikut untuk reset password Anda:</p>
+//         <a href="${resetUrl}">${resetUrl}</a>
+//         <p>Link ini hanya berlaku 1 jam.</p>
+//       `,
+//     });
+
+//     res.json({
+//       message: "Link reset password telah dikirim ke email Anda",
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({
+//       message: "Gagal memproses permintaan",
+//       error: err.message,
+//     });
+//   }
+// };

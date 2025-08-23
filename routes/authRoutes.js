@@ -13,5 +13,6 @@ router.put(
   upload.single("foto_profil"),
   authController.update
 );
+router.delete("/delete-user/:id", authController.deleteUser);
 
 module.exports = router;
