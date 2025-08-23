@@ -2,12 +2,10 @@ const { CurahHujan, User } = require("../models");
 const { Op } = require("sequelize");
 
 function hitungSifatHujan(mm) {
-  if (mm < 5) return "Rendah";
-  if (mm < 20) return "Sedang";
+  if (mm <= 5) return "Ringan";
+  if (mm <= 20) return "Sedang";
   return "Lebat";
 }
-
-const sifat_hujan = hitungSifatHujan();
 
 exports.createCurahHujan = async (req, res) => {
   try {
@@ -22,6 +20,7 @@ exports.createCurahHujan = async (req, res) => {
       opt,
     } = req.body;
     const user_id = req.user.id;
+    const sifat_hujan = hitungSifatHujan(curah_hujan);
 
     const dataBaru = await CurahHujan.create({
       tanggal,
@@ -43,6 +42,53 @@ exports.createCurahHujan = async (req, res) => {
     res
       .status(500)
       .json({ message: "Gagal menyimpan data", error: err.message });
+  }
+};
+
+exports.updateCurahHujan = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const {
+      tanggal,
+      jam,
+      umur_hss,
+      umur_tanaman,
+      curah_hujan,
+      varietas,
+      sumber_air,
+      opt,
+      keterangan,
+    } = req.body;
+    const sifat_hujan = hitungSifatHujan(curah_hujan);
+    const data = await CurahHujan.findByPk(id);
+
+    if (!data) {
+      return res.status(404).json({ message: "Data tidak ditemukan" });
+    }
+
+    await data.update({
+      tanggal,
+      jam,
+      umur_hss,
+      umur_tanaman,
+      curah_hujan,
+      sifat_hujan,
+      varietas,
+      sumber_air,
+      opt,
+      keterangan,
+    });
+
+    return res.status(200).json({
+      message: "Data berhasil diperbarui",
+      data: data,
+    });
+  } catch (error) {
+    console.error("Gagal update data:", error);
+    return res.status(500).json({
+      message: "Terjadi kesalahan saat memperbarui data",
+      error: error.message,
+    });
   }
 };
 
@@ -91,5 +137,40 @@ exports.getAllData = async (req, res) => {
     res
       .status(500)
       .json({ message: "Gagal mengambil semua data", error: err.message });
+  }
+};
+
+exports.getDataById = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const data = await CurahHujan.findByPk(id, { include: User });
+
+    if (!data) {
+      return res.status(404).json({ message: "Data tidak ditemukan" });
+    }
+
+    res.json({ data });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Gagal mengambil data", error: err.message });
+  }
+};
+
+exports.deleteData = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const data = await CurahHujan.findByPk(id);
+
+    if (!data) {
+      return res.status(404).json({ message: "Data tidak ditemukan" });
+    }
+
+    await data.destroy();
+    res.json({ message: "Data berhasil dihapus" });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Gagal menghapus data", error: err.message });
   }
 };

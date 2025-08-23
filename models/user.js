@@ -26,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
         validate: { isEmail: true },
       },
+      foto_profil: DataTypes.STRING,
       tanggal_lahir: DataTypes.DATE,
       alamat: DataTypes.STRING,
       nomor_telepon: DataTypes.STRING,
@@ -36,6 +37,8 @@ module.exports = (sequelize, DataTypes) => {
       kode_user: DataTypes.STRING,
       kode_stasiun: DataTypes.STRING,
       tgl_mulai_bekerja: DataTypes.DATE,
+      // reset_token: DataTypes.STRING,
+      // reset_token_expiry: DataTypes.DATE,
     },
     {
       sequelize,

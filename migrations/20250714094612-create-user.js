@@ -12,6 +12,9 @@ module.exports = {
       nama: {
         type: Sequelize.STRING,
       },
+      foto_profil: {
+        type: Sequelize.STRING,
+      },
       email: {
         type: Sequelize.STRING,
         unique: true,
