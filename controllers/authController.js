@@ -3,7 +3,8 @@ const { User, CurahHujan } = require("../models");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 require("dotenv").config();
 
@@ -198,52 +199,74 @@ exports.deleteUser = async (req, res) => {
   }
 };
 
-// exports.forgotPassword = async (req, res) => {
-//   try {
-//     const { email } = req.body;
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
 
-//     const user = await User.findOne({ where: { email } });
-//     if (!user) {
-//       return res.status(404).json({ message: "Email tidak ditemukan" });
-//     }
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return res.status(404).json({ message: "Email tidak ditemukan" });
+    }
 
-//     const resetToken = crypto.randomBytes(32).toString("hex");
-//     const resetTokenExpiry = Date.now() + 1000 * 60 * 60;
+    const reset_token = crypto.randomBytes(32).toString("hex");
+    const reset_token_expiry = new Date(Date.now() + 1000 * 60 * 60); // 1 jam
 
-//     user.resetToken = resetToken;
-//     user.resetTokenExpiry = resetTokenExpiry;
-//     await user.save();
+    user.reset_token = reset_token;
+    user.reset_token_expiry = reset_token_expiry;
+    await user.save();
 
-//     const transporter = nodemailer.createTransport({
-//       service: "gmail",
-//       auth: {
-//         user: process.env.EMAIL_USER,
-//         pass: process.env.EMAIL_PASS,
-//       },
-//     });
+    const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${reset_token}`;
 
-//     const resetUrl = `${process.env.FRONTEND_URL}/auth/reset-password/${resetToken}`;
+    await resend.emails.send({
+      from: "no-reply@sistem-monitoring-pltu-imy.site",
+      to: email,
+      subject: "Reset Password - Sistem Monitoring Curah Hujan",
+      html: `
+        <p>Anda meminta reset password.</p>
+        <p>Klik link berikut untuk reset password Anda:</p>
+        <a href="${resetUrl}">${resetUrl}</a>
+        <p>Link ini hanya berlaku <b>1 jam</b>.</p>
+      `,
+    });
 
-//     await transporter.sendMail({
-//       from: process.env.EMAIL_USER,
-//       to: email,
-//       subject: "Reset Password - Sistem Monitoring Curah Hujan",
-//       html: `
-//         <p>Anda meminta reset password.</p>
-//         <p>Klik link berikut untuk reset password Anda:</p>
-//         <a href="${resetUrl}">${resetUrl}</a>
-//         <p>Link ini hanya berlaku 1 jam.</p>
-//       `,
-//     });
+    res.json({ message: "Link reset password telah dikirim ke email Anda" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: "Gagal memproses permintaan",
+      error: err.message,
+    });
+  }
+};
 
-//     res.json({
-//       message: "Link reset password telah dikirim ke email Anda",
-//     });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({
-//       message: "Gagal memproses permintaan",
-//       error: err.message,
-//     });
-//   }
-// };
+exports.resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    const user = await User.findOne({ where: { reset_token: token } });
+
+    if (!user || user.reset_token_expiry < Date.now()) {
+      return res
+        .status(400)
+        .json({ message: "Token tidak valid atau sudah kedaluwarsa" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    user.password = hashedPassword;
+    user.reset_token = null;
+    user.reset_token_expiry = null;
+    await user.save();
+
+    res.json({
+      message: "Password berhasil direset. Silakan login dengan password baru.",
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: "Gagal mereset password",
+      error: err.message,
+    });
+  }
+};
