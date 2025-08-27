@@ -118,6 +118,7 @@ exports.getDataByMonth = async (req, res) => {
           [Op.lt]: endDate,
         },
       },
+      include: User,
       order: [["tanggal", "ASC"]],
     });
 
