@@ -37,8 +37,8 @@ module.exports = (sequelize, DataTypes) => {
       kode_user: DataTypes.STRING,
       kode_stasiun: DataTypes.STRING,
       tgl_mulai_bekerja: DataTypes.DATE,
-      // reset_token: DataTypes.STRING,
-      // reset_token_expiry: DataTypes.DATE,
+      reset_token: DataTypes.STRING,
+      reset_token_expiry: DataTypes.DATE,
     },
     {
       sequelize,
