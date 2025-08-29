@@ -92,10 +92,11 @@ exports.updateCurahHujan = async (req, res) => {
   }
 };
 
+// === GET DATA BY MONTH ===
 exports.getDataByMonth = async (req, res) => {
   try {
     const { bulan, tahun } = req.query;
-    // const user_id = req.user.id;
+    const { id: userId, role } = req.user;
 
     if (!bulan || !tahun) {
       return res.status(400).json({
@@ -110,14 +111,19 @@ exports.getDataByMonth = async (req, res) => {
     const startDate = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0));
     const endDate = new Date(Date.UTC(year, month, 1, 0, 0, 0));
 
-    const data = await CurahHujan.findAll({
-      where: {
-        // user_id,
-        tanggal: {
-          [Op.gte]: startDate,
-          [Op.lt]: endDate,
-        },
+    let whereClause = {
+      tanggal: {
+        [Op.gte]: startDate,
+        [Op.lt]: endDate,
       },
+    };
+
+    if (role === "user") {
+      whereClause.user_id = userId;
+    }
+
+    const data = await CurahHujan.findAll({
+      where: whereClause,
       include: User,
       order: [["tanggal", "ASC"]],
     });
@@ -129,9 +135,20 @@ exports.getDataByMonth = async (req, res) => {
   }
 };
 
+// === GET ALL DATA ===
 exports.getAllData = async (req, res) => {
   try {
-    const data = await CurahHujan.findAll({ include: User });
+    const { id: userId, role } = req.user;
+
+    let whereClause = {};
+    if (role === "user") {
+      whereClause.user_id = userId;
+    }
+
+    const data = await CurahHujan.findAll({
+      where: whereClause,
+      include: User,
+    });
 
     res.json({ data });
   } catch (err) {
@@ -141,13 +158,22 @@ exports.getAllData = async (req, res) => {
   }
 };
 
+// === GET DATA BY ID ===
 exports.getDataById = async (req, res) => {
   try {
+    const { id: userId, role } = req.user;
     const id = req.params.id;
+
     const data = await CurahHujan.findByPk(id, { include: User });
 
     if (!data) {
       return res.status(404).json({ message: "Data tidak ditemukan" });
+    }
+
+    if (role === "user" && data.user_id !== userId) {
+      return res
+        .status(403)
+        .json({ message: "Anda tidak berhak mengakses data ini" });
     }
 
     res.json({ data });
