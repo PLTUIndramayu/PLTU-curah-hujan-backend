@@ -1,0 +1,35 @@
+name: Backup Postgres to Google Drive
+
+on:
+  schedule:
+    - cron: "0 20 * * *"   # 03:00 WIB
+  workflow_dispatch:       
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install PostgreSQL client & rclone
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+          curl https://rclone.org/install.sh | sudo bash
+
+      - name: Restore rclone config
+        run: |
+          mkdir -p ~/.config/rclone
+          echo "${RCLONE_CONFIG}" > ~/.config/rclone/rclone.conf
+        env:
+          RCLONE_CONFIG: ${{ secrets.RCLONE_CONFIG }}
+
+      - name: Dump Postgres Database
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          TIMESTAMP=$(date +%F_%H%M)
+          mkdir -p backups
+          pg_dump -Fc "$DATABASE_URL" | gzip > backups/backup_$TIMESTAMP.dump.gz
+
+      - name: Upload to Google Drive
+        run: |
+          rclone copy backups/ gdrive:curah-hujan-backup/ --progress
